@@ -6,7 +6,7 @@ function switchPage(page) {
     const navBtn = document.querySelector(`.bnav-item[data-page="${page}"]`);
     if (navBtn) navBtn.classList.add('active');
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
 
     if (page === 'dashboard') { renderSalesTable(); renderExpensesTable(); renderDailyReport(); renderOrdersList(); }
     if (page === 'my-orders') renderMyOrders();

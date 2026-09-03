@@ -1,0 +1,73 @@
+/* =====================================================
+   PERFORMANCE OVERRIDES (MOBILE SMOOTHNESS)
+   backdrop-filter blur is very expensive on mobile GPUs.
+   On small screens we replace heavy blur layers with
+   solid/semi-opaque backgrounds for silky 60fps scrolling.
+   ===================================================== */
+
+@media (max-width: 767px) {
+
+    /* Header & nav: drop blur, use near-opaque bg */
+    .app-header,
+    .bottom-nav {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(255, 255, 255, 0.96);
+    }
+
+    /* Cards & all glass panels: solid bg, no blur, lighter shadow */
+    .hero-banner,
+    .quick-action,
+    .product-scroll-card,
+    .pgrid-card,
+    .info-card,
+    .form-card,
+    .dash-card,
+    .mini-stat,
+    .dsummary-card,
+    .dash-tab,
+    .my-order-card,
+    .login-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 4px 14px rgba(31, 45, 80, 0.06);
+    }
+
+    /* Modal & toast blur */
+    .modal-overlay { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .modal-card { backdrop-filter: none; -webkit-backdrop-filter: none; background: #fff; }
+    .toast-bar { backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+    /* Hero keeps gradient (cheap), remove its floating shadow anim */
+    .hero-banner { animation: none; }
+
+    /* Decorative blobs: stop GPU-animating, keep static for perf */
+    .deco-blob { animation: none; }
+    .shine-line { animation-duration: 6s; }
+
+    /* page entrance: keep subtle, cheap */
+    .page { animation-duration: 0.25s; }
+
+    /* Table headers gradient is fine, no anim */
+}
+
+@media (min-width: 768px) {
+    /* Desktop can afford blur, but reduce double-layering cost a bit */
+    .quick-action,
+    .product-scroll-card,
+    .pgrid-card,
+    .info-card,
+    .form-card,
+    .dash-card,
+    .mini-stat,
+    .dsummary-card,
+    .my-order-card {
+        will-change: transform;
+    }
+}
+
+/* Respect users who prefer reduced motion (accessibility + extra smoothness) */
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+}
