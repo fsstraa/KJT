@@ -111,9 +111,11 @@
                         <div class="form-card-title"><i class="fas fa-box"></i> Detail Pesanan</div>
                         <div class="form-field"><label>Pilih Produk</label><select id="order-product" required><option value="">-- Pilih Produk --</option><option value="Pertalite">Pertalite</option><option value="Pertamax">Pertamax</option><option value="Gas LPG 3KG">Gas LPG 3KG</option><option value="Le Minerale">Le Minerale</option></select></div>
                         <div class="form-field"><label>Jumlah</label><input type="number" id="order-quantity" placeholder="0" min="1" required></div>
-                        <div class="form-field"><label>Catatan (Opsional)</label><textarea id="order-note" placeholder="Catatan tambahan..." rows="2"></textarea></div>
+                        <div class="form-field"><label>Catatan / Bukti Nota (Opsional)</label><textarea id="order-note" placeholder="Isi no. nota / foto, atau catatan tambahan" rows="2"></textarea></div>
                     </div>
-                    <button type="submit" class="btn-wa-full"><i class="fab fa-whatsapp"></i> Kirim Pesanan via WhatsApp</button>
+                    <button type="submit" class="btn-primary-full"><i class="fas fa-paper-plane"></i> Buat Pesanan</button>
+                    <div style="margin-top:14px;text-align:center;color:var(--text-muted);font-size:0.8rem;font-family:var(--font-ui);">atau</div>
+                    <button type="button" class="btn-wa-full" id="order-wa-template" style="margin-top:14px;"><i class="fab fa-whatsapp"></i> Pesan via WhatsApp (isi sendiri)</button>
                 </form>
             </div>
         </div>
@@ -253,7 +255,7 @@
                     <div class="section-pad">
                         <div class="dash-card">
                             <div class="dash-card-title"><i class="fas fa-receipt"></i> Pesanan Masuk</div>
-                            <div class="table-scroll"><table class="app-table"><thead><tr><th>Tanggal</th><th>Pelanggan</th><th>Produk</th><th>Jumlah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
+                            <div class="table-scroll"><table class="app-table"><thead><tr><th>No. Nota</th><th>Tanggal</th><th>Pelanggan</th><th>Produk</th><th>Jumlah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="orders-tbody"></tbody></table></div>
                         </div>
                     </div>
                 </div>
@@ -362,7 +364,7 @@
     <!-- Order Popup -->
     <div id="order-popup" class="modal-overlay hidden">
         <div class="modal-card">
-            <div class="modal-header"><i class="fas fa-bell"></i><h3>Pesanan Baru!</h3></div>
+            <div class="modal-header"><i class="fas fa-receipt"></i><h3 id="popup-title">Struk Pesanan</h3></div>
             <div class="modal-body" id="popup-body"></div>
             <div class="modal-footer">
                 <button id="close-popup" class="btn-primary-full">Tutup</button>
