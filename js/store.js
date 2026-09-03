@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'kjt_data';
+const DEFAULT_ADMIN = { username: 'kjt21', password: 'tahan tidur' };
 
 const DEFAULT_DATA = {
     products: [
@@ -10,7 +11,6 @@ const DEFAULT_DATA = {
     sales: [],
     expenses: [],
     settings: { whatsappNumber: '085778837136', logo: null, images: { Pertalite: null, Pertamax: null, 'Gas LPG 3KG': null, 'Le Minerale': null } },
-    admin: { username: 'kjt21', password: 'tahan tidur' },
     orders: [],
     isLoggedIn: false
 };
@@ -20,28 +20,12 @@ let appData = loadData();
 function loadData() {
     try {
         const s = localStorage.getItem(STORAGE_KEY);
-        if (s) return { ...DEFAULT_DATA, ...JSON.parse(s), admin: DEFAULT_DATA.admin };
+        if (s) return { ...DEFAULT_DATA, ...JSON.parse(s), admin: DEFAULT_ADMIN };
     } catch (e) { console.error(e); }
-    return { ...DEFAULT_DATA };
+    return { ...DEFAULT_DATA, admin: DEFAULT_ADMIN };
 }
 
 function saveData() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch (e) { console.error(e); }
-    if (typeof window.__syncToBackend === 'function') window.__syncToBackend();
-}
-
-async function loadFromBackend() {
-    try {
-        const r = await fetch('/api/data');
-        if (!r.ok) return false;
-        const server = await r.json();
-        if (!server) return false;
-        appData.products = server.products || appData.products;
-        appData.sales = server.sales || [];
-        appData.expenses = server.expenses || [];
-        appData.orders = server.orders || [];
-        appData.settings = { ...appData.settings, ...server.settings };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        return true;
-    } catch (e) { return false; }
+    if (window.__sbPush) window.__sbPush();
 }

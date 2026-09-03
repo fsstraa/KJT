@@ -96,6 +96,5 @@ function completeOrder(id) {
 function deleteOrder(id) {
     if (!confirm('Hapus pesanan ini?')) return;
     appData.orders = appData.orders.filter(o => o.id !== id);
-    saveData(); if (window.__removeFromBackend) window.__removeFromBackend('orders', id);
-    renderOrdersList(); showToast('Pesanan dihapus');
+    saveData(); renderOrdersList(); showToast('Pesanan dihapus');
 }

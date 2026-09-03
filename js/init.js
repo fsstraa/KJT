@@ -1,3 +1,14 @@
+function renderAll() {
+    renderProducts();
+    loadSettings();
+    if (typeof renderOverview === 'function') renderOverview();
+    if (typeof renderSalesTable === 'function') renderSalesTable();
+    if (typeof renderExpensesTable === 'function') renderExpensesTable();
+    if (typeof renderDailyReport === 'function') renderDailyReport();
+    if (typeof renderOrdersList === 'function') renderOrdersList();
+    if (typeof renderMyOrders === 'function') renderMyOrders();
+}
+
 document.querySelectorAll('.dash-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
@@ -20,7 +31,7 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
         appData.isLoggedIn = true;
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('dashboard-content').classList.remove('hidden');
-        renderOverview(); renderSalesTable(); renderExpensesTable(); renderDailyReport(); renderOrdersList();
+        renderAll();
         showToast('Login berhasil!');
     } else { showToast('Username atau password salah!', true); }
 });
@@ -32,11 +43,5 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     document.getElementById('login-form').reset();
     showToast('Berhasil logout');
 });
-
-function init() { renderProducts(); loadSettings(); }
-
-function initOnBackendLoad() {
-    renderProducts(); loadSettings(); renderOverview(); renderSalesTable(); renderExpensesTable(); renderDailyReport(); renderOrdersList(); renderMyOrders();
-}
 
 init();
