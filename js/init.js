@@ -34,4 +34,9 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 function init() { renderProducts(); loadSettings(); }
+
+function initOnBackendLoad() {
+    renderProducts(); loadSettings(); renderOverview(); renderSalesTable(); renderExpensesTable(); renderDailyReport(); renderOrdersList(); renderMyOrders();
+}
+
 init();

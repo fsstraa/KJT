@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/effects.css">
+    <link rel="stylesheet" href="css/design.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -23,18 +25,24 @@
             <span class="header-title">KJT</span>
         </div>
         <div class="header-right">
+            <span id="db-status" class="db-badge"><i class="fas fa-database"></i><span>Database Laptop</span></span>
             <button class="header-btn" onclick="switchPage('my-orders')">
                 <i class="fas fa-receipt"></i>
             </button>
         </div>
     </header>
+    <div class="shine-line"></div>
 
     <main class="app-main" id="app-main">
 
         <!-- HOME -->
         <div class="page active" id="page-home">
             <div class="hero-banner">
+                <span class="deco-blob b1"></span>
+                <span class="deco-blob b2"></span>
+                <span class="deco-blob b3"></span>
                 <div class="hero-content">
+                    <span class="hero-badge"><i class="fas fa-bolt"></i> Siap Melayani 24 Jam</span>
                     <span class="hero-greeting">Selamat Datang di</span>
                     <h1 class="hero-name">KIOS JURUS TANDUR</h1>
                     <p class="hero-tagline">BBM & Gas Berkualitas, Harga Terjangkau</p>
@@ -77,7 +85,7 @@
                         <h3>Pesan via WhatsApp</h3>
                         <p>Hubungi kami untuk pemesanan langsung</p>
                     </div>
-                    <a class="info-btn" id="wa-home-btn" href="#" target="_blank"><i class="fas fa-arrow-right"></i></a>
+                    <a class="info-btn btn-shimmer" id="wa-home-btn" href="#" target="_blank"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -113,7 +121,7 @@
                         <div class="form-field"><label>Jumlah</label><input type="number" id="order-quantity" placeholder="0" min="1" required></div>
                         <div class="form-field"><label>Catatan / Bukti Nota (Opsional)</label><textarea id="order-note" placeholder="Isi no. nota / foto, atau catatan tambahan" rows="2"></textarea></div>
                     </div>
-                    <button type="submit" class="btn-primary-full"><i class="fas fa-paper-plane"></i> Buat Pesanan</button>
+                    <button type="submit" class="btn-primary-full btn-shimmer"><i class="fas fa-paper-plane"></i> Buat Pesanan</button>
                     <div style="margin-top:14px;text-align:center;color:var(--text-muted);font-size:0.8rem;font-family:var(--font-ui);">atau</div>
                     <button type="button" class="btn-wa-full" id="order-wa-template" style="margin-top:14px;"><i class="fab fa-whatsapp"></i> Pesan via WhatsApp (isi sendiri)</button>
                 </form>
@@ -375,7 +383,9 @@
     <div id="toast" class="toast-bar hidden"><i class="fas fa-check-circle"></i><span id="toast-message">Berhasil!</span></div>
 
     <script src="js/store.js"></script>
+    <script src="js/effects.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/orders.js"></script>
     <script src="js/admin.js"></script>

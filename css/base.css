@@ -48,6 +48,10 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--text);
 .header-title { font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem; color: var(--text); letter-spacing: 0.3px; }
 .header-btn { width: 38px; height: 38px; border: none; background: var(--primary-bg); color: var(--primary); border-radius: 10px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
 .header-btn:active { transform: scale(0.92); }
+.db-badge { display: none; align-items: center; gap: 6px; background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.25); padding: 5px 10px; border-radius: 20px; font-family: var(--font-ui); font-size: 0.68rem; font-weight: 700; white-space: nowrap; }
+.db-badge.show { display: flex; animation: toastBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.db-badge i { animation: dbPulse 2s ease-in-out infinite; }
+@keyframes dbPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
 
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; z-index: 100; padding: 0 8px; }
 .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; padding: 6px 12px; cursor: pointer; transition: var(--transition); border-radius: 12px; min-width: 60px; }

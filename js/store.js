@@ -27,4 +27,21 @@ function loadData() {
 
 function saveData() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch (e) { console.error(e); }
+    if (typeof window.__syncToBackend === 'function') window.__syncToBackend();
+}
+
+async function loadFromBackend() {
+    try {
+        const r = await fetch('/api/data');
+        if (!r.ok) return false;
+        const server = await r.json();
+        if (!server) return false;
+        appData.products = server.products || appData.products;
+        appData.sales = server.sales || [];
+        appData.expenses = server.expenses || [];
+        appData.orders = server.orders || [];
+        appData.settings = { ...appData.settings, ...server.settings };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+        return true;
+    } catch (e) { return false; }
 }

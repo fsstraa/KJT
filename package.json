@@ -1,0 +1,12 @@
+{
+  "name": "kios-jurus-tandur",
+  "version": "1.0.0",
+  "description": "Website Penjualan KIOS JURUS TANDUR with local laptop database backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

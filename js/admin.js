@@ -87,7 +87,8 @@ function deleteSale(id) {
     if (!confirm('Hapus penjualan ini?')) return;
     appData.sales = appData.sales.filter(s => s.id !== id);
     if (editingSaleId === id) editingSaleId = null;
-    saveData(); renderSalesTable(); renderOverview(); showToast('Penjualan dihapus');
+    saveData(); if (window.__removeFromBackend) window.__removeFromBackend('sales', id);
+    renderSalesTable(); renderOverview(); showToast('Penjualan dihapus');
 }
 
 document.getElementById('expense-date').value = getTodayStr();
@@ -138,5 +139,6 @@ function deleteExpense(id) {
     if (!confirm('Hapus pengeluaran ini?')) return;
     appData.expenses = appData.expenses.filter(e => e.id !== id);
     if (editingExpenseId === id) editingExpenseId = null;
-    saveData(); renderExpensesTable(); renderOverview(); showToast('Pengeluaran dihapus');
+    saveData(); if (window.__removeFromBackend) window.__removeFromBackend('expenses', id);
+    renderExpensesTable(); renderOverview(); showToast('Pengeluaran dihapus');
 }

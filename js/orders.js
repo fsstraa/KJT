@@ -42,6 +42,7 @@ function showOrderPopup(order) {
     document.getElementById('popup-title').textContent = 'Struk Pesanan';
     body.innerHTML = `<div style="text-align:center;margin-bottom:14px;padding:12px;background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.05));border-radius:12px;border:1px dashed var(--primary);"><div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-ui);">NO. NOTA</div><div style="font-family:var(--font-heading);font-weight:800;color:var(--primary);font-size:1.2rem;">${order.nota}</div></div><div class="dash-list-item"><span class="dli-label">Tanggal</span><span class="dli-value">${formatDateLabel(order.date)}</span></div><div class="dash-list-item"><span class="dli-label">Nama</span><span class="dli-value">${order.name}</span></div><div class="dash-list-item"><span class="dli-label">Produk</span><span class="dli-value">${order.product}</span></div><div class="dash-list-item"><span class="dli-label">Jumlah</span><span class="dli-value">${order.quantity} ${prod ? prod.unit : ''}</span></div><div class="dash-list-item"><span class="dli-label">Total</span><span class="dli-value green">${formatRupiah(order.total)}</span></div>${order.note ? `<div class="dash-list-item"><span class="dli-label">Bukti Nota</span><span class="dli-value">${order.note}</span></div>` : ''}<div style="margin-top:14px;padding:10px;background:var(--bg);border-radius:10px;text-align:center;color:var(--text-muted);font-size:0.78rem;font-family:var(--font-ui);"><i class="fas fa-check-circle" style="color:var(--success);"></i> Pesanan tersimpan. Hubungi kami via WhatsApp untuk konfirmasi.</div>`;
     document.getElementById('order-popup').classList.remove('hidden');
+    playFx();
 }
 
 document.getElementById('close-popup').addEventListener('click', () => { document.getElementById('order-popup').classList.add('hidden'); });
@@ -95,5 +96,6 @@ function completeOrder(id) {
 function deleteOrder(id) {
     if (!confirm('Hapus pesanan ini?')) return;
     appData.orders = appData.orders.filter(o => o.id !== id);
-    saveData(); renderOrdersList(); showToast('Pesanan dihapus');
+    saveData(); if (window.__removeFromBackend) window.__removeFromBackend('orders', id);
+    renderOrdersList(); showToast('Pesanan dihapus');
 }
