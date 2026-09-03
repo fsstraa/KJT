@@ -94,14 +94,13 @@ document.getElementById('order-form').addEventListener('submit', function (e) {
     appData.orders.push(order);
     saveData();
 
-    showOrderPopup(order);
-
     const waMsg = encodeURIComponent(`*PESANAN BARU - KIOS JURUS TANDUR*\n\nNama: ${name}\nNo. HP: ${phone}\nLokasi: ${location}\nProduk: ${product}\nJumlah: ${quantity} ${prod ? prod.unit : ''}\nTotal: ${formatRupiah(total)}\n${note ? `Catatan: ${note}\n` : ''}\nTerima kasih sudah memesan!`);
     const waNum = appData.settings.whatsappNumber.replace(/[^0-9]/g, '');
-    window.open(`https://wa.me/${waNum}?text=${waMsg}`, '_blank');
-
+    
     this.reset();
-    showToast('Pesanan berhasil dikirim!');
+    showOrderPopup(order);
+
+    try { window.location.href = `https://wa.me/${waNum}?text=${waMsg}`; } catch(e) { window.open(`https://wa.me/${waNum}?text=${waMsg}`, '_blank'); }
 });
 
 function showOrderPopup(order) {
