@@ -7,8 +7,8 @@
 
 const SUPABASE_CONFIG = {
     // Project URL (Settings > API). Contoh: https://abcdefgh.supabase.co
-    url: "",
+    url: "https://ujbrlltohevhjsmqidfa.supabase.co",
 
     // anon public key (Settings > API > anon public). Contoh: eyJhbGciOi...
-    anonKey: ""
+    anonKey: "sb_publishable_94ySSfABUn3D3O5Wh4bJJw_r2j67Slf"
 };
