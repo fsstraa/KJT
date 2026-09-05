@@ -50,6 +50,8 @@ function loadSettings() {
     });
     const msEl = document.getElementById('modal-start'); if (msEl) msEl.value = appData.settings.modalStart || 0;
     const tpEl = document.getElementById('target-profit'); if (tpEl) tpEl.value = appData.settings.targetProfit || 0;
+    const sqEl = document.getElementById('security-question'); if (sqEl) sqEl.value = appData.admin.securityQuestion || '';
+    const saEl = document.getElementById('security-answer'); if (saEl) saEl.value = appData.admin.securityAnswer || '';
     if (appData.settings.logo) document.getElementById('logo-img').src = appData.settings.logo;
     const previews = { Pertalite: 'preview-pertalite', Pertamax: 'preview-pertamax', 'Gas LPG 3KG': 'preview-lpg', 'Le Minerale': 'preview-leminerale' };
     Object.entries(previews).forEach(([name, id]) => { if (appData.settings.images[name]) { const el = document.getElementById(id); if (el) { el.src = appData.settings.images[name]; el.classList.add('show'); } } });
@@ -108,6 +110,16 @@ document.getElementById('save-password').addEventListener('click', () => {
     showToast('Password berhasil diganti!');
 });
 
+document.getElementById('save-security').addEventListener('click', () => {
+    const q = document.getElementById('security-question').value.trim();
+    const a = document.getElementById('security-answer').value;
+    if (!q || !a) { showToast('Isi pertanyaan dan jawaban!', true); return; }
+    appData.admin.securityQuestion = q;
+    appData.admin.securityAnswer = normalizeAnswer(a);
+    saveData();
+    showToast('Pertanyaan keamanan tersimpan!');
+});
+
 document.getElementById('download-backup').addEventListener('click', () => {
     const data = { products: appData.products, sales: appData.sales, expenses: appData.expenses, orders: appData.orders, settings: appData.settings, admin: appData.admin };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -134,7 +146,7 @@ document.getElementById('restore-file').addEventListener('change', function () {
                 ...DEFAULT_DATA,
                 ...parsed,
                 settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
-                admin: (parsed.admin && parsed.admin.password) ? parsed.admin : DEFAULT_ADMIN
+                admin: { ...DEFAULT_ADMIN, ...(parsed.admin || {}) }
             };
             ensureProductMeta();
             saveData(); renderAll();

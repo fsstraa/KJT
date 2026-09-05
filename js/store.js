@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'kjt_data';
-const DEFAULT_ADMIN = { username: 'kjt21', password: 'tahan tidur' };
+const DEFAULT_ADMIN = { username: 'kjt21', password: 'tahan tidur', securityQuestion: '', securityAnswer: '' };
 
 const DEFAULT_DATA = {
     products: [
@@ -26,12 +26,14 @@ function loadData() {
                 ...DEFAULT_DATA,
                 ...parsed,
                 settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
-                admin: (parsed.admin && parsed.admin.password) ? parsed.admin : DEFAULT_ADMIN
+                admin: { ...DEFAULT_ADMIN, ...(parsed.admin || {}) }
             };
         }
     } catch (e) { console.error(e); }
     return { ...DEFAULT_DATA, admin: DEFAULT_ADMIN };
 }
+
+function normalizeAnswer(v) { return String(v || '').trim().toLowerCase(); }
 
 function saveData() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch (e) { console.error(e); }
