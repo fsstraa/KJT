@@ -36,7 +36,14 @@ async function sbInit() {
     if (sbLoading) return;
     sbLoading = true;
     try {
-        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+        let mod;
+        try {
+            mod = await import('https://esm.sh/@supabase/supabase-js@2');
+        } catch (e1) {
+            console.warn('[Supabase] esm.sh gagal, coba jsdelivr:', e1);
+            mod = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+        }
+        const { createClient } = mod;
         if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
             console.warn('[Supabase] URL/anonKey belum diisi di js/supabase-config.js');
             setStatus('');
@@ -66,7 +73,15 @@ async function sbInit() {
     }
 }
 
-// Ambil data dari cloud (yang lebih baru menang)
+// Cek apakah payload punya data nyata (bukan kosong)
+function hasRealData(d) {
+    return (d.orders && d.orders.length) || (d.sales && d.sales.length) || (d.expenses && d.expenses.length);
+}
+
+// Ambil data dari cloud.
+// Aturan:
+//  - Cloud TIDAK pernah menimpa data lokal jika cloud kosong (mencegah data hilang saat refresh)
+//  - Cloud menimpa lokal hanya jika cloud punya data DAN lebih baru dari lokal
 async function sbPull() {
     if (!sbEnabled) return;
     try {
@@ -80,14 +95,16 @@ async function sbPull() {
             const serverData = data.payload;
             const serverTime = new Date(serverData.updatedAt || 0);
             const localTime = new Date(appData._dbTime || 0);
+            const serverHas = hasRealData(serverData);
+            const localHas = hasRealData(appData);
 
-            // Cloud lebih baru -> tarik ke lokal
-            if (serverTime > localTime) {
+            // Hanya tarik cloud ke lokal jika cloud punya data (root cause hilangnya data saat refresh)
+            if (serverHas && serverTime > localTime) {
                 mergeServerData(serverData);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
                 if (typeof renderAll === 'function') renderAll();
             }
-            // Lokal lebih baru -> nanti di-push oleh sbPush()
+            // Selain itu: jaga data lokal, nanti sbPush() yang meng-upload ke cloud
         }
     } catch (e) { console.warn('[Supabase] Pull error:', e); }
 }
@@ -114,6 +131,7 @@ async function sbPush() {
         updatedAt: new Date().toISOString()
     };
     appData._dbTime = payload.updatedAt;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
     try {
         const { error } = await supabase.from(TABLE).upsert({ id: ROW_ID, payload }, { onConflict: 'id' });
         if (error) { console.warn('[Supabase] Push gagal:', error.message); setStatus('offline'); }
@@ -128,7 +146,8 @@ function subscribeRealtime() {
                 const peer = await supabase.from(TABLE).select('payload').eq('id', ROW_ID).single();
                 if (peer.data && peer.data.payload) {
                     const t = peer.data.payload.updatedAt;
-                    if (t && new Date(t) > new Date(appData._dbTime || 0)) {
+                    const peerHas = hasRealData(peer.data.payload);
+                    if (peerHas && t && new Date(t) > new Date(appData._dbTime || 0)) {
                         mergeServerData(peer.data.payload);
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
                         if (typeof renderAll === 'function') renderAll();
@@ -138,6 +157,11 @@ function subscribeRealtime() {
             .subscribe();
     } catch (e) { console.warn('[Supabase] Realtime gagal:', e); }
 }
+
+// Saat tab website di-fokus-kan lagi, tarik ulang dari cloud (= konten terbaru dari perangkat lain)
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') sbPull();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     sbInit();

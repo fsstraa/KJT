@@ -21,3 +21,6 @@ create policy "Allow public insert" on public.kjt_app
 
 create policy "Allow public update" on public.kjt_app
   for update using (true) with check (true);
+
+-- Aktifkan realtime untuk tabel ini (agar perubahan dari perangkat lain langsung muncul)
+alter publication supabase_realtime add table public.kjt_app;
