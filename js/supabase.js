@@ -79,9 +79,10 @@ function hasRealData(d) {
 }
 
 // Ambil data dari cloud.
-// Aturan:
-//  - Cloud TIDAK pernah menimpa data lokal jika cloud kosong (mencegah data hilang saat refresh)
-//  - Cloud menimpa lokal hanya jika cloud punya data DAN lebih baru dari lokal
+// Aturan (aman by design):
+//  - Pull hanya MENAMBAH data cloud ke lokal (union), TIDAK pernah menghapus/menimpa apa pun dari lokal.
+//  - Konflik per item diselesaikan "yang punya timestamp lebih baru menang".
+//  - Jadi bagaimanapun urutan/timezone/perangkat, hasil edit tidak akan hilang saat refresh.
 async function sbPull() {
     if (!sbEnabled) return;
     try {
@@ -93,13 +94,8 @@ async function sbPull() {
 
         if (data && data.payload) {
             const serverData = data.payload;
-            const serverTime = new Date(serverData.updatedAt || 0);
-            const localTime = new Date(appData._dbTime || 0);
-            const serverHas = hasRealData(serverData);
-            const localHas = hasRealData(appData);
-
-            // Hanya tarik cloud ke lokal jika cloud punya data (root cause hilangnya data saat refresh)
-            if (serverHas && serverTime > localTime) {
+            // Jangan gabungkan baris placeholder kosong
+            if (hasRealData(serverData)) {
                 mergeServerData(serverData);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
                 if (typeof renderAll === 'function') renderAll();
@@ -109,19 +105,46 @@ async function sbPull() {
     } catch (e) { console.warn('[Supabase] Pull error:', e); }
 }
 
+// Gabungkan data cloud ke lokal secara non-destruktif (union).
+// Aturan per item: beda id -> ambil; id sama -> ikut yang timestamp-nya lebih baru.
+// Produk: lokal menang untuk id yang sama (jarang konflik), cloud mengisi jika lokal kosong.
 function mergeServerData(serverData) {
-    appData.products = serverData.products || appData.products;
-    appData.sales = serverData.sales || [];
-    appData.expenses = serverData.expenses || [];
-    appData.orders = serverData.orders || [];
-    appData.settings = { ...appData.settings, ...serverData.settings };
-    appData._dbTime = serverData.updatedAt;
+    appData.products = unionById(appData.products, serverData.products, false);
+    appData.sales = unionById(appData.sales, serverData.sales);
+    appData.expenses = unionById(appData.expenses, serverData.expenses);
+    appData.orders = unionById(appData.orders, serverData.orders);
+    appData.settings = { ...appData.settings, ...(serverData.settings || {}) };
 }
 
+function unionById(localArr, serverArr, newestWins) {
+    const local = Array.isArray(localArr) ? localArr : [];
+    const server = Array.isArray(serverArr) ? serverArr : [];
+    if (!server.length) return local;
+    const byId = new Map();
+    local.forEach(x => { if (x && x.id !== undefined) byId.set(x.id, x); });
+    server.forEach(x => {
+        if (!x || x.id === undefined) return;
+        const ex = byId.get(x.id);
+        if (!ex) { byId.set(x.id, x); return; }
+        if (newestWins === false) return;
+        const a = new Date(ex.timestamp || 0), b = new Date(x.timestamp || 0);
+        if (b > a) byId.set(x.id, x);
+    });
+    return Array.from(byId.values());
+}
+
+let sbDirty = false;
+
+// Request push: kalau lagi ada push berjalan, tandai "perlu push lagi" setelah selesai
 async function sbPush() {
     if (!sbEnabled) return;
-    if (sbUpsertQueue) return;
+    sbDirty = true;
+    runPush();
+}
+async function runPush() {
+    if (!sbEnabled || sbUpsertQueue) return;
     sbUpsertQueue = true;
+    sbDirty = false;
     const payload = {
         products: appData.products,
         sales: appData.sales,
@@ -137,6 +160,7 @@ async function sbPush() {
         if (error) { console.warn('[Supabase] Push gagal:', error.message); setStatus('offline'); }
     } catch (e) { console.warn('[Supabase] Push error:', e); setStatus('offline'); }
     sbUpsertQueue = false;
+    if (sbDirty) runPush();
 }
 
 function subscribeRealtime() {
