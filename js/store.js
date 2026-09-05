@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'kjt_data';
-const DEFAULT_ADMIN = { username: 'kjt21', password: 'tahan tidur', securityQuestion: '', securityAnswer: '' };
+const DEFAULT_ADMIN = { username: 'kjt21', password: 'tahan tidur', securityQuestion: '', securityAnswer: '', ts: '' };
 
 const DEFAULT_DATA = {
     products: [

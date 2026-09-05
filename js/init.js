@@ -75,6 +75,7 @@ document.getElementById('forgot-form').addEventListener('submit', function (e) {
     if (!nw || nw.length < 4) { showToast('Password baru minimal 4 karakter!', true); return; }
     if (nw !== cf) { showToast('Konfirmasi password tidak cocok!', true); return; }
     appData.admin.password = nw;
+    appData.admin.ts = new Date().toISOString();
     saveData();
     loginAttempts = 0;
     document.getElementById('forgot-screen').classList.add('hidden');

@@ -114,6 +114,18 @@ function mergeServerData(serverData) {
     appData.expenses = unionById(appData.expenses, serverData.expenses);
     appData.orders = unionById(appData.orders, serverData.orders);
     appData.settings = { ...appData.settings, ...(serverData.settings || {}) };
+    appData.admin = unionAdmin(appData.admin, serverData.admin);
+}
+
+// Admin (akun & pertanyaan keamanan): ikut yang paling baru diubah (ts),
+// supaya password/pemulihan sama di HP & laptop
+function unionAdmin(localA, serverA) {
+    if (!serverA || !serverA.password) return localA;
+    if (!localA || !localA.password) return serverA;
+    const a = localA.ts ? new Date(localA.ts) : null;
+    const b = serverA.ts ? new Date(serverA.ts) : null;
+    if ((!a && b) || (a && b && b > a)) return serverA;
+    return localA;
 }
 
 function unionProducts(localArr, serverArr) {
@@ -168,6 +180,7 @@ async function runPush() {
         expenses: appData.expenses,
         orders: appData.orders,
         settings: appData.settings,
+        admin: appData.admin,
         updatedAt: new Date().toISOString()
     };
     appData._dbTime = payload.updatedAt;

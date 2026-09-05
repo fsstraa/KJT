@@ -105,6 +105,7 @@ document.getElementById('save-password').addEventListener('click', () => {
     if (!nw || nw.length < 4) { showToast('Password baru minimal 4 karakter!', true); return; }
     if (nw !== cf) { showToast('Konfirmasi password tidak cocok!', true); return; }
     appData.admin.password = nw;
+    appData.admin.ts = new Date().toISOString();
     saveData();
     ['current-password', 'new-password', 'confirm-password'].forEach(id => document.getElementById(id).value = '');
     showToast('Password berhasil diganti!');
@@ -116,6 +117,7 @@ document.getElementById('save-security').addEventListener('click', () => {
     if (!q || !a) { showToast('Isi pertanyaan dan jawaban!', true); return; }
     appData.admin.securityQuestion = q;
     appData.admin.securityAnswer = normalizeAnswer(a);
+    appData.admin.ts = new Date().toISOString();
     saveData();
     showToast('Pertanyaan keamanan tersimpan!');
 });
