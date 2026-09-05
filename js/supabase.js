@@ -107,16 +107,34 @@ async function sbPull() {
 
 // Gabungkan data cloud ke lokal secara non-destruktif (union).
 // Aturan per item: beda id -> ambil; id sama -> ikut yang timestamp-nya lebih baru.
-// Produk: lokal menang untuk id yang sama (jarang konflik), cloud mengisi jika lokal kosong.
+// Produk: ikut yang ts-nya lebih baru (agar harga/no WA perubahan di satu perangkat ikut menyebar)
 function mergeServerData(serverData) {
-    appData.products = unionById(appData.products, serverData.products, false);
+    appData.products = unionProducts(appData.products, serverData.products);
     appData.sales = unionById(appData.sales, serverData.sales);
     appData.expenses = unionById(appData.expenses, serverData.expenses);
     appData.orders = unionById(appData.orders, serverData.orders);
     appData.settings = { ...appData.settings, ...(serverData.settings || {}) };
 }
 
-function unionById(localArr, serverArr, newestWins) {
+function unionProducts(localArr, serverArr) {
+    const local = Array.isArray(localArr) ? localArr : [];
+    const server = Array.isArray(serverArr) ? serverArr : [];
+    if (!local.length) return server;
+    if (!server.length) return local;
+    const byId = new Map();
+    local.forEach(p => { if (p && p.id !== undefined) byId.set(p.id, p); });
+    server.forEach(p => {
+        if (!p || p.id === undefined) return;
+        const ex = byId.get(p.id);
+        if (!ex) { byId.set(p.id, p); return; }
+        const a = ex.ts ? new Date(ex.ts) : null;
+        const b = p.ts ? new Date(p.ts) : null;
+        if ((!a && b) || (a && b && b > a)) byId.set(p.id, p);
+    });
+    return Array.from(byId.values());
+}
+
+function unionById(localArr, serverArr) {
     const local = Array.isArray(localArr) ? localArr : [];
     const server = Array.isArray(serverArr) ? serverArr : [];
     if (!server.length) return local;
@@ -126,7 +144,6 @@ function unionById(localArr, serverArr, newestWins) {
         if (!x || x.id === undefined) return;
         const ex = byId.get(x.id);
         if (!ex) { byId.set(x.id, x); return; }
-        if (newestWins === false) return;
         const a = new Date(ex.timestamp || 0), b = new Date(x.timestamp || 0);
         if (b > a) byId.set(x.id, x);
     });

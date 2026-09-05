@@ -27,6 +27,7 @@ document.getElementById('save-prices').addEventListener('click', () => {
     appData.products[3].buyPrice = parseInt(document.getElementById('price-leminerale-buy').value) || 20000;
     appData.products[3].sellPrice = parseInt(document.getElementById('price-leminerale-sell').value) || 22000;
     appData.settings.whatsappNumber = document.getElementById('whatsapp-number').value || '085778837136';
+    appData.products.forEach(p => p.ts = new Date().toISOString());
     saveData(); renderProducts(); showToast('Pengaturan tersimpan!');
 });
 
