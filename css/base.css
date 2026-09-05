@@ -54,6 +54,7 @@ body { font-family: var(--font-body); background: linear-gradient(160deg, #E9EEF
 .db-badge { display: none; align-items: center; gap: 6px; background: rgba(16,185,129,0.14); color: var(--success); border: 1px solid rgba(16,185,129,0.25); padding: 5px 12px; border-radius: 20px; font-family: var(--font-ui); font-size: 0.68rem; font-weight: 700; white-space: nowrap; }
 .db-badge.show { display: flex; animation: toastBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .db-badge i { animation: dbPulse 2s ease-in-out infinite; }
+.db-badge.offline { background: rgba(245,158,11,0.15); color: #D97706; border-color: rgba(245,158,11,0.3); }
 @keyframes dbPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
 
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height); background: rgba(255,255,255,0.65); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 100; padding: 0 10px; }

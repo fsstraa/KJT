@@ -4,5 +4,4 @@ Desktop.ini
 *.swp
 *.swo
 .vscode/
-node_modules/
 server-data/

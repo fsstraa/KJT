@@ -47,8 +47,9 @@ git push
 ```
 
 ## Selesai! ✅
-- Buka website (https://fsstraa.github.io/KJT/ atau via `mulai.bat`).
-- Badge header akan menunjukkan **"Database Cloud"** saat berhasil terhubung.
-- Coba simpan penjualan di laptop, lalu buka di HP — datanya akan muncul otomatis (bahkan secara realtime bila kedua halaman terbuka).
-
-> Catatan: `server.js` / `mulai.bat` & folder `server-data/` sudah TIDAK dipakai lagi untuk sinkronisasi. Kamu cukup pakai website yang jalan di manapun (karena datanya dari cloud). Bisa dihapus bila mau.
+- Buka website: **https://fsstraa.github.io/KJT/**
+- Badge header menampilkan:
+  - **"Database Cloud"** (hijau) → tersinkron ke Supabase
+  - **"Offline - Data Lokal"** (kuning) → koneksi tidak ada, data aman di browser, akan naik ke cloud saat online lagi
+- Data lama dari localStorage otomatis di-upload ke cloud saat pertama kali website dibuka.
+- Coba simpan penjualan di laptop, lalu buka di HP — datanya muncul otomatis (bahkan realtime bila dua halaman terbuka).

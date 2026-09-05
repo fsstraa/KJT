@@ -4,6 +4,7 @@
 //  - local-first (localStorage) agar tetap cepat di HP
 //  - tulis perubahan ke cloud (Supabase)
 //  - realtime: perubahan dari perangkat lain otomatis muncul
+//  - migrasi: data lama di localStorage otomatis naik ke cloud
 // ============================================================
 
 let supabase = null;
@@ -14,6 +15,23 @@ let sbUpsertQueue = false;
 const TABLE = 'kjt_app';
 const ROW_ID = 'kjt-data';
 
+function setStatus(mode) {
+    const el = document.getElementById('db-status');
+    if (!el) return;
+    const span = el.querySelector('span');
+    el.classList.remove('show', 'offline');
+    if (mode === 'cloud') {
+        span.textContent = 'Database Cloud';
+        el.classList.add('show');
+    } else if (mode === 'offline') {
+        span.textContent = 'Offline - Data Lokal';
+        el.classList.add('show');
+        el.classList.add('offline');
+    } else {
+        el.classList.remove('show');
+    }
+}
+
 async function sbInit() {
     if (sbLoading) return;
     sbLoading = true;
@@ -21,40 +39,57 @@ async function sbInit() {
         const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
         if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
             console.warn('[Supabase] URL/anonKey belum diisi di js/supabase-config.js');
+            setStatus('');
             sbEnabled = false;
             return;
         }
         supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
         sbEnabled = true;
         console.log('[Supabase] Terhubung ke cloud');
+
+        // Migrasi + sinkron pertama: data lama dari localStorage naik ke cloud
         await sbPull();
+        // Setelah pull, kalau cloud masih kosong/lebih lama -> push data lokal
+        await sbPush();
         subscribeRealtime();
-        const el = document.getElementById('db-status');
-        if (el) {
-            el.querySelector('span').textContent = 'Database Cloud';
-            el.classList.add('show');
-        }
+        setStatus('cloud');
+
+        // Pantau koneksi internet: kalau offline, tampilkan status lokal
+        window.addEventListener('online', () => setStatus('cloud'));
+        window.addEventListener('offline', () => setStatus('offline'));
     } catch (e) {
         console.error('[Supabase] Gagal konek:', e);
         sbEnabled = false;
+        setStatus('offline');
     } finally {
         sbLoading = false;
     }
 }
 
+// Ambil data dari cloud (yang lebih baru menang)
 async function sbPull() {
     if (!sbEnabled) return;
     try {
-        const { data } = await supabase.from(TABLE).select('payload, updated_at').eq('id', ROW_ID).single();
+        const { data, error } = await supabase.from(TABLE).select('payload, updated_at').eq('id', ROW_ID).single();
+
+        // Baris belum ada di cloud -> biarkan push lokal yang isi
+        if (error && error.code === 'PGRST116') return;
+        if (error) { console.warn('[Supabase] Pull gagal:', error.message); return; }
+
         if (data && data.payload) {
             const serverData = data.payload;
-            if (serverData.updatedAt && new Date(serverData.updatedAt) > new Date(appData._dbTime || 0)) {
+            const serverTime = new Date(serverData.updatedAt || 0);
+            const localTime = new Date(appData._dbTime || 0);
+
+            // Cloud lebih baru -> tarik ke lokal
+            if (serverTime > localTime) {
                 mergeServerData(serverData);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
                 if (typeof renderAll === 'function') renderAll();
             }
+            // Lokal lebih baru -> nanti di-push oleh sbPush()
         }
-    } catch (e) { console.warn('[Supabase] Pull gagal:', e.message); }
+    } catch (e) { console.warn('[Supabase] Pull error:', e); }
 }
 
 function mergeServerData(serverData) {
@@ -81,8 +116,8 @@ async function sbPush() {
     appData._dbTime = payload.updatedAt;
     try {
         const { error } = await supabase.from(TABLE).upsert({ id: ROW_ID, payload }, { onConflict: 'id' });
-        if (error) console.warn('[Supabase] Push gagal:', error.message);
-    } catch (e) { console.warn('[Supabase] Push error:', e); }
+        if (error) { console.warn('[Supabase] Push gagal:', error.message); setStatus('offline'); }
+    } catch (e) { console.warn('[Supabase] Push error:', e); setStatus('offline'); }
     sbUpsertQueue = false;
 }
 
@@ -90,7 +125,6 @@ function subscribeRealtime() {
     try {
         supabase.channel('kjt-sync')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: TABLE, filter: `id=eq.${ROW_ID}` }, async () => {
-                // debounce: perangkat lain menyimpan -> tarik data terbaru
                 const peer = await supabase.from(TABLE).select('payload').eq('id', ROW_ID).single();
                 if (peer.data && peer.data.payload) {
                     const t = peer.data.payload.updatedAt;
