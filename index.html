@@ -215,6 +215,24 @@
                             <div id="recent-sales" class="dash-list"></div>
                         </div>
                     </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-hand-holding-usd"></i> Kas Hari Ini</div>
+                            <div class="stat-cards">
+                                <div class="mini-stat gold"><div class="mini-stat-icon"><i class="fas fa-piggy-bank"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="kas-awal">Rp 0</span><span class="mini-stat-label">Modal Awal</span></div></div>
+                                <div class="mini-stat green"><div class="mini-stat-icon"><i class="fas fa-arrow-down"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="kas-in">Rp 0</span><span class="mini-stat-label">Masuk Hari Ini</span></div></div>
+                                <div class="mini-stat red"><div class="mini-stat-icon"><i class="fas fa-arrow-up"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="kas-out">Rp 0</span><span class="mini-stat-label">Keluar Hari Ini</span></div></div>
+                                <div class="mini-stat"><div class="mini-stat-icon"><i class="fas fa-wallet"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="kas-hand">Rp 0</span><span class="mini-stat-label">Kas di Tangan</span></div></div>
+                            </div>
+                            <div id="kas-target-line" style="font-size:0.8rem; color:var(--text-muted); margin-top:12px; font-family:var(--font-ui);"></div>
+                        </div>
+                    </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-boxes"></i> Stok Barang</div>
+                            <div id="stock-summary" class="dash-list"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Sales -->
@@ -358,6 +376,50 @@
                                 <div class="setting-item"><label>Harga Jual Le Minerale (Rp)</label><input type="number" id="price-leminerale-sell" value="22000" class="setting-input"></div>
                                 <div class="setting-item"><label>Nomor WhatsApp</label><input type="text" id="whatsapp-number" value="085778837136" class="setting-input"></div>
                                 <button id="save-prices" class="btn-primary-full"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-boxes"></i> Stok Barang</div>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin:0 0 10px; font-family:var(--font-ui);">Kosongkan kolom stok = tidak dilacak. Kolom kedua = batas peringatan "menipis".</p>
+                            <div class="settings-list">
+                                <div class="setting-item"><label>Stok Pertalite (Liter)</label><div class="setting-row-2"><input type="number" id="stock-pertalite" min="0" class="setting-input" placeholder="Kosong"><input type="number" id="smin-pertalite" min="0" class="setting-input" placeholder="Min"></div></div>
+                                <div class="setting-item"><label>Stok Pertamax (Liter)</label><div class="setting-row-2"><input type="number" id="stock-pertamax" min="0" class="setting-input" placeholder="Kosong"><input type="number" id="smin-pertamax" min="0" class="setting-input" placeholder="Min"></div></div>
+                                <div class="setting-item"><label>Stok Gas LPG 3KG (Tabung)</label><div class="setting-row-2"><input type="number" id="stock-lpg" min="0" class="setting-input" placeholder="Kosong"><input type="number" id="smin-lpg" min="0" class="setting-input" placeholder="Min"></div></div>
+                                <div class="setting-item"><label>Stok Le Minerale (Karton)</label><div class="setting-row-2"><input type="number" id="stock-leminerale" min="0" class="setting-input" placeholder="Kosong"><input type="number" id="smin-leminerale" min="0" class="setting-input" placeholder="Min"></div></div>
+                                <button id="save-stock" class="btn-primary-full"><i class="fas fa-save"></i> Simpan Stok</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-piggy-bank"></i> Kas & Modal</div>
+                            <div class="settings-list">
+                                <div class="setting-item"><label>Modal Awal / Kas di Tangan (Rp)</label><input type="number" id="modal-start" min="0" class="setting-input" placeholder="0"></div>
+                                <div class="setting-item"><label>Target Laba Harian (Rp)</label><input type="number" id="target-profit" min="0" class="setting-input" placeholder="0"></div>
+                                <button id="save-cash" class="btn-primary-full"><i class="fas fa-save"></i> Simpan Kas & Modal</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-key"></i> Ganti Password Admin</div>
+                            <div class="settings-list">
+                                <div class="setting-item"><label>Password Lama</label><input type="password" id="current-password" class="setting-input" placeholder="Password saat ini"></div>
+                                <div class="setting-item"><label>Password Baru (min. 4 karakter)</label><input type="password" id="new-password" class="setting-input" placeholder="Password baru"></div>
+                                <div class="setting-item"><label>Ulangi Password Baru</label><input type="password" id="confirm-password" class="setting-input" placeholder="Ulangi password baru"></div>
+                                <button id="save-password" class="btn-primary-full"><i class="fas fa-save"></i> Ganti Password</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-pad">
+                        <div class="dash-card">
+                            <div class="dash-card-title"><i class="fas fa-database"></i> Cadangan Data</div>
+                            <div class="settings-list">
+                                <div class="setting-item"><label>Unduh cadangan semua data (JSON)</label><button id="download-backup" class="btn-primary-full"><i class="fas fa-download"></i> Unduh Cadangan</button></div>
+                                <div class="setting-item"><label>Pulihkan dari file cadangan</label><input type="file" id="restore-file" accept=".json,application/json" class="file-input"></div>
+                                <p style="font-size:0.72rem; color:var(--text-muted); margin:0; font-family:var(--font-ui);">Cadangan berisi produk, penjualan, pengeluaran, pesanan, pengaturan, dan akun admin. Simpan file ini di tempat aman.</p>
                             </div>
                         </div>
                     </div>

@@ -34,6 +34,35 @@ function renderOverview() {
     const recent = [...appData.sales].reverse().slice(0, 8);
     if (!recent.length) { rs.innerHTML = '<div class="dash-list-item"><span class="dli-label">Belum ada penjualan</span></div>'; }
     else { recent.forEach(sale => { const prod = appData.products.find(p => p.name === sale.product); const total = prod ? prod.sellPrice * sale.quantity : 0; rs.innerHTML += `<div class="dash-list-item"><span class="dli-label">${sale.product} (${sale.quantity}) - ${sale.date}</span><span class="dli-value green">${formatRupiah(total)}</span></div>`; }); }
+
+    const todayRevenue = todaySales.reduce((s, x) => { const p = productById(x.product); return s + (p ? p.sellPrice * x.quantity : 0); }, 0);
+    const kasAwal = Number(appData.settings.modalStart) || 0;
+    const kasHand = kasAwal + todayRevenue - totalExpense;
+    const cashEl = document.getElementById('kas-awal'); if (cashEl) cashEl.textContent = formatRupiah(kasAwal);
+    const cinEl = document.getElementById('kas-in'); if (cinEl) cinEl.textContent = formatRupiah(todayRevenue);
+    const coutEl = document.getElementById('kas-out'); if (coutEl) coutEl.textContent = formatRupiah(totalExpense);
+    const chenEl = document.getElementById('kas-hand'); if (chenEl) { chenEl.textContent = formatRupiah(kasHand); chenEl.style.color = kasHand >= 0 ? 'var(--success)' : 'var(--danger)'; }
+    const ctLine = document.getElementById('kas-target-line');
+    if (ctLine) {
+        ctLine.innerHTML = '';
+        const target = Number(appData.settings.targetProfit) || 0;
+        ctLine.innerHTML = target > 0
+            ? `<span>Target laba hari ini: ${formatRupiah(target)} — <strong style="color:${totalProfit >= target ? 'var(--success)' : 'var(--danger)'};">${totalProfit >= target ? 'Tercapai!' : 'Belum tercapai (' + formatRupiah(totalProfit) + ')'}</strong></span>`
+            : `<span>Modal awal & target laba bisa diatur di menu <strong>Pengaturan → Kas & Modal</strong>.</span>`;
+    }
+
+    const st = document.getElementById('stock-summary');
+    if (st) {
+        st.innerHTML = '';
+        appData.products.forEach(p => {
+            if (!isStockTracked(p)) {
+                st.innerHTML += `<div class="dash-list-item"><span class="dli-label">${p.name}</span><span class="dli-value" style="color:var(--text-muted);">Tidak dilacak</span></div>`;
+                return;
+            }
+            const low = p.stock <= (p.stockMin || 0);
+            st.innerHTML += `<div class="dash-list-item"><span class="dli-label">${p.name}</span><span class="dli-value ${p.stock <= 0 ? 'red' : low ? '' : 'green'}" style="${p.stock <= 0 ? '' : low ? 'color:var(--warning);' : ''}"><strong>${p.stock} ${p.unit}</strong>${p.stock <= 0 ? ' — Habis' : low ? ' — Menipis' : ''}</span></div>`;
+        });
+    }
 }
 
 document.getElementById('sale-date').value = getTodayStr();
@@ -45,11 +74,27 @@ document.getElementById('sale-form').addEventListener('submit', function (e) {
     const quantity = parseInt(document.getElementById('sale-quantity').value);
     const date = document.getElementById('sale-date').value;
     if (!product || !quantity || !date) { showToast('Isi semua field!', true); return; }
+    const prod = productById(product);
     if (editingSaleId) {
         const sale = appData.sales.find(s => s.id === editingSaleId);
-        if (sale) { sale.product = product; sale.quantity = quantity; sale.date = date; sale.timestamp = new Date().toISOString(); }
+        if (sale) {
+            const oldProd = productById(sale.product);
+            if (isStockTracked(oldProd)) oldProd.stock += sale.quantity;
+            if (isStockTracked(prod) && prod.stock < quantity) {
+                if (isStockTracked(oldProd)) oldProd.stock -= sale.quantity;
+                showToast(`Stok ${prod.name} tidak cukup (sisa ${prod.stock})!`, true);
+                return;
+            }
+            sale.product = product; sale.quantity = quantity; sale.date = date; sale.timestamp = new Date().toISOString();
+            if (isStockTracked(prod)) prod.stock -= quantity;
+        }
         editingSaleId = null; showToast('Penjualan berhasil diupdate!');
     } else {
+        if (isStockTracked(prod) && prod.stock < quantity) {
+            showToast(`Stok ${prod.name} tidak cukup (sisa ${prod.stock})!`, true);
+            return;
+        }
+        if (isStockTracked(prod)) prod.stock -= quantity;
         appData.sales.push({ id: genId(), product, quantity, date, timestamp: new Date().toISOString() });
         showToast('Penjualan tersimpan!');
     }
@@ -85,6 +130,11 @@ function editSale(id) {
 
 function deleteSale(id) {
     if (!confirm('Hapus penjualan ini?')) return;
+    const sale = appData.sales.find(s => s.id === id);
+    if (sale) {
+        const prod = productById(sale.product);
+        if (isStockTracked(prod)) prod.stock += sale.quantity;
+    }
     appData.sales = appData.sales.filter(s => s.id !== id);
     if (editingSaleId === id) editingSaleId = null;
     saveData(); renderSalesTable(); renderOverview(); showToast('Penjualan dihapus');

@@ -41,6 +41,15 @@ function loadSettings() {
     document.getElementById('price-leminerale-buy').value = appData.products[3].buyPrice;
     document.getElementById('price-leminerale-sell').value = appData.products[3].sellPrice;
     document.getElementById('whatsapp-number').value = appData.settings.whatsappNumber;
+    const stockPairs = { Pertalite: 'pertalite', Pertamax: 'pertamax', 'Gas LPG 3KG': 'lpg', 'Le Minerale': 'leminerale' };
+    Object.entries(stockPairs).forEach(([name, k]) => {
+        const p = productById(name);
+        const sEl = document.getElementById(`stock-${k}`), mEl = document.getElementById(`smin-${k}`);
+        if (sEl) sEl.value = p && isStockTracked(p) ? p.stock : '';
+        if (mEl) mEl.value = p && p.stockMin !== undefined ? p.stockMin : 3;
+    });
+    const msEl = document.getElementById('modal-start'); if (msEl) msEl.value = appData.settings.modalStart || 0;
+    const tpEl = document.getElementById('target-profit'); if (tpEl) tpEl.value = appData.settings.targetProfit || 0;
     if (appData.settings.logo) document.getElementById('logo-img').src = appData.settings.logo;
     const previews = { Pertalite: 'preview-pertalite', Pertamax: 'preview-pertamax', 'Gas LPG 3KG': 'preview-lpg', 'Le Minerale': 'preview-leminerale' };
     Object.entries(previews).forEach(([name, id]) => { if (appData.settings.images[name]) { const el = document.getElementById(id); if (el) { el.src = appData.settings.images[name]; el.classList.add('show'); } } });
@@ -60,4 +69,78 @@ function loadSettings() {
             r.readAsDataURL(this.files[0]);
         }
     });
+});
+
+const STOCK_MAP = { Pertalite: 'pertalite', Pertamax: 'pertamax', 'Gas LPG 3KG': 'lpg', 'Le Minerale': 'leminerale' };
+
+document.getElementById('save-stock').addEventListener('click', () => {
+    Object.entries(STOCK_MAP).forEach(([name, k]) => {
+        const p = productById(name);
+        const sVal = document.getElementById(`stock-${k}`).value;
+        const mVal = document.getElementById(`smin-${k}`).value;
+        if (p) {
+            p.stock = sVal === '' || sVal === null ? null : Math.max(0, parseInt(sVal) || 0);
+            p.stockMin = mVal === '' ? 3 : Math.max(0, parseInt(mVal) || 0);
+        }
+    });
+    appData.products.forEach(p => p.ts = new Date().toISOString());
+    saveData(); renderProducts(); renderOverview();
+    showToast('Stok tersimpan!');
+});
+
+document.getElementById('save-cash').addEventListener('click', () => {
+    appData.settings.modalStart = Math.max(0, parseInt(document.getElementById('modal-start').value) || 0);
+    appData.settings.targetProfit = Math.max(0, parseInt(document.getElementById('target-profit').value) || 0);
+    saveData(); renderOverview();
+    showToast('Kas & modal tersimpan!');
+});
+
+document.getElementById('save-password').addEventListener('click', () => {
+    const cur = document.getElementById('current-password').value;
+    const nw = document.getElementById('new-password').value;
+    const cf = document.getElementById('confirm-password').value;
+    if (cur !== appData.admin.password) { showToast('Password lama salah!', true); return; }
+    if (!nw || nw.length < 4) { showToast('Password baru minimal 4 karakter!', true); return; }
+    if (nw !== cf) { showToast('Konfirmasi password tidak cocok!', true); return; }
+    appData.admin.password = nw;
+    saveData();
+    ['current-password', 'new-password', 'confirm-password'].forEach(id => document.getElementById(id).value = '');
+    showToast('Password berhasil diganti!');
+});
+
+document.getElementById('download-backup').addEventListener('click', () => {
+    const data = { products: appData.products, sales: appData.sales, expenses: appData.expenses, orders: appData.orders, settings: appData.settings, admin: appData.admin };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    const d = new Date();
+    const ts = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
+    a.href = URL.createObjectURL(blob);
+    a.download = `KJT-backup-${ts}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Cadangan berhasil diunduh!');
+});
+
+document.getElementById('restore-file').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    if (!confirm('Pulihkan data dari file cadangan? Data saat ini akan DIGANTI. Lanjut?')) { this.value = ''; return; }
+    const r = new FileReader();
+    r.onload = e => {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed.products || !parsed.settings) throw new Error('File tidak valid');
+            appData = {
+                ...DEFAULT_DATA,
+                ...parsed,
+                settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
+                admin: (parsed.admin && parsed.admin.password) ? parsed.admin : DEFAULT_ADMIN
+            };
+            ensureProductMeta();
+            saveData(); renderAll();
+            showToast('Data berhasil dipulihkan!');
+        } catch (err) { showToast('File cadangan tidak valid!', true); }
+        this.value = '';
+    };
+    r.readAsText(file);
 });
