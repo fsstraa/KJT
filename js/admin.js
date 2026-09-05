@@ -65,7 +65,7 @@ function renderSalesTable() {
         const total = prod.sellPrice * sale.quantity;
         const isEditing = editingSaleId === sale.id;
         const row = document.createElement('tr');
-        row.style.background = isEditing ? 'rgba(59,130,246,0.06)' : '';
+        row.style.background = isEditing ? 'rgba(185,28,28,0.06)' : '';
         row.innerHTML = `<td>${sale.date}</td><td><strong>${sale.product}</strong></td><td>${sale.quantity} ${prod.unit}</td><td>${formatRupiah(total)}</td><td><button class="btn-tbl btn-tbl-edit" onclick="editSale('${sale.id}')"><i class="fas fa-pen"></i></button><button class="btn-tbl btn-tbl-del" onclick="deleteSale('${sale.id}')"><i class="fas fa-trash"></i></button></td>`;
         tbody.appendChild(row);
     });
@@ -116,7 +116,7 @@ function renderExpensesTable() {
     [...appData.expenses].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(exp => {
         const isEditing = editingExpenseId === exp.id;
         const row = document.createElement('tr');
-        row.style.background = isEditing ? 'rgba(59,130,246,0.06)' : '';
+        row.style.background = isEditing ? 'rgba(185,28,28,0.06)' : '';
         row.innerHTML = `<td>${exp.date}</td><td>${exp.description}</td><td style="color:var(--danger);font-weight:700;">${formatRupiah(exp.amount)}</td><td><button class="btn-tbl btn-tbl-edit" onclick="editExpense('${exp.id}')"><i class="fas fa-pen"></i></button><button class="btn-tbl btn-tbl-del" onclick="deleteExpense('${exp.id}')"><i class="fas fa-trash"></i></button></td>`;
         tbody.appendChild(row);
     });

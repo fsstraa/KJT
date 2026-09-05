@@ -23,8 +23,18 @@ function downloadCSV(all) {
     showToast('File diunduh!');
 }
 
-document.getElementById('download-pdf-daily').addEventListener('click', () => downloadPDF(true));
-document.getElementById('download-pdf-all').addEventListener('click', () => downloadPDF(false));
+document.getElementById('download-pdf-daily').addEventListener('click', () => ensurePDF(() => downloadPDF(true)));
+document.getElementById('download-pdf-all').addEventListener('click', () => ensurePDF(() => downloadPDF(false)));
+
+// jsPDF dimuat hanya saat tombol PDF pertama kali diklik (ringankan beban awal halaman)
+function ensurePDF(callback) {
+    if (window.jspdf) { callback(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => { if (window.jspdf) callback(); else showToast('Gagal memuat PDF, coba lagi', true); };
+    s.onerror = () => showToast('Gagal memuat PDF, cek koneksi', true);
+    document.head.appendChild(s);
+}
 
 function downloadPDF(dailyOnly = false) {
     const { jsPDF } = window.jspdf;

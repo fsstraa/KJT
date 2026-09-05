@@ -1,10 +1,10 @@
 .deco-blob { position: absolute; border-radius: 50%; filter: blur(2px); pointer-events: none; opacity: 0.5; }
 .deco-blob.b1 { width: 90px; height: 90px; bottom: -20px; left: -20px; background: radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%); animation: blobFloat 8s ease-in-out infinite; }
-.deco-blob.b2 { width: 60px; height: 60px; top: -15px; right: 35px; background: radial-gradient(circle, rgba(6,182,212,0.35), transparent 70%); animation: blobFloat 6s ease-in-out infinite reverse; }
+.deco-blob.b2 { width: 60px; height: 60px; top: -15px; right: 35px; background: radial-gradient(circle, rgba(225,29,72,0.35), transparent 70%); animation: blobFloat 6s ease-in-out infinite reverse; }
 .deco-blob.b3 { width: 40px; height: 40px; top: 30px; right: 10px; background: radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%); animation: blobFloat 10s ease-in-out infinite 1s; }
 @keyframes blobFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.12); } }
 
-.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 4px 12px; border-radius: 20px; font-family: var(--font-ui); font-size: 0.68rem; font-weight: 600; backdrop-filter: blur(4px); margin-bottom: 10px; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 4px 12px; border-radius: 20px; font-family: var(--font-ui); font-size: 0.68rem; font-weight: 600; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); margin-bottom: 10px; }
 .hero-badge i { animation: bellSwing 1.2s ease-in-out infinite; }
 
 .section-title-wrap { display: flex; align-items: center; justify-content: space-between; margin: 18px 16px 12px; }
@@ -27,7 +27,16 @@
 .btn-shimmer:hover::before, .btn-shimmer:active::before { transform: translateX(400%); }
 
 .stat-green { background: rgba(16,185,129,0.12); color: var(--success); }
-.stat-blue { background: rgba(59,130,246,0.12); color: var(--secondary); }
+.stat-rose { background: rgba(185,28,28,0.12); color: var(--secondary); }
 
 .shine-line { height: 3px; background: var(--gradient); width: 100%; border-radius: 0 0 3px 3px; animation: shineSlide 3s linear infinite; background-size: 200% 100%; }
 @keyframes shineSlide { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* =====================================================
+   BUTIRAN HALUS (film grain) - tekstur halus ala iOS
+   -----------------------------------------------------
+   .grain        = butiran halus tipis di seluruh halaman
+   .grain-hero   = butiran lebih terlihat di atas gradien hero
+   ===================================================== */
+.grain { position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 160px 160px; }
+.grain-hero { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.12; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 160px 160px; }

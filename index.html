@@ -2,8 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KIOS JURUS TANDUR</title>
+    <meta name="theme-color" content="#B91C1C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KJT">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -11,14 +18,10 @@
     <link rel="stylesheet" href="css/effects.css">
     <link rel="stylesheet" href="css/design.css">
     <link rel="stylesheet" href="css/perf.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <meta name="theme-color" content="#10B981">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
+    <div class="grain" aria-hidden="true"></div>
 
     <header class="app-header">
         <div class="header-left">
@@ -42,6 +45,7 @@
                 <span class="deco-blob b1"></span>
                 <span class="deco-blob b2"></span>
                 <span class="deco-blob b3"></span>
+                <span class="grain-hero" aria-hidden="true"></span>
                 <div class="hero-content">
                     <span class="hero-badge"><i class="fas fa-bolt"></i> Siap Melayani 24 Jam</span>
                     <span class="hero-greeting">Selamat Datang di</span>
@@ -53,7 +57,7 @@
             <div class="section-pad">
                 <div class="quick-actions">
                     <div class="quick-action" onclick="switchPage('products')">
-                        <div class="qa-icon" style="background: rgba(16,185,129,0.12);"><i class="fas fa-gas-pump" style="color: var(--primary);"></i></div>
+                        <div class="qa-icon" style="background: rgba(185,28,28,0.12);"><i class="fas fa-gas-pump" style="color: var(--primary);"></i></div>
                         <span>BBM</span>
                     </div>
                     <div class="quick-action" onclick="switchPage('products')">
@@ -61,7 +65,7 @@
                         <span>Gas</span>
                     </div>
                     <div class="quick-action" onclick="switchPage('products')">
-                        <div class="qa-icon" style="background: rgba(6,182,212,0.12);"><i class="fas fa-tint" style="color: #06B6D4;"></i></div>
+                        <div class="qa-icon" style="background: rgba(225,29,72,0.12);"><i class="fas fa-tint" style="color: #E11D48;"></i></div>
                         <span>Mineral</span>
                     </div>
                     <div class="quick-action" onclick="switchPage('order')">
@@ -194,9 +198,9 @@
                     <div class="section-pad">
                         <div class="stat-cards">
                             <div class="mini-stat green"><div class="mini-stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-sales">0</span><span class="mini-stat-label">Penjualan Hari Ini</span></div></div>
-                            <div class="mini-stat blue"><div class="mini-stat-icon"><i class="fas fa-coins"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-profit">Rp 0</span><span class="mini-stat-label">Keuntungan Hari Ini</span></div></div>
-                            <div class="mini-stat red"><div class="mini-stat-icon"><i class="fas fa-wallet"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-expense">Rp 0</span><span class="mini-stat-label">Pengeluaran Hari Ini</span></div></div>
-                            <div class="mini-stat teal"><div class="mini-stat-icon"><i class="fas fa-chart-line"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-net">Rp 0</span><span class="mini-stat-label">Laba Bersih Hari Ini</span></div></div>
+                            <div class="mini-stat rose"><div class="mini-stat-icon"><i class="fas fa-coins"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-profit">Rp 0</span><span class="mini-stat-label">Keuntungan Hari Ini</span></div></div>
+                            <div class="mini-stat gold"><div class="mini-stat-icon"><i class="fas fa-wallet"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-expense">Rp 0</span><span class="mini-stat-label">Pengeluaran Hari Ini</span></div></div>
+                            <div class="mini-stat red"><div class="mini-stat-icon"><i class="fas fa-chart-line"></i></div><div class="mini-stat-info"><span class="mini-stat-val" id="total-net">Rp 0</span><span class="mini-stat-label">Laba Bersih Hari Ini</span></div></div>
                         </div>
                     </div>
                     <div class="section-pad">

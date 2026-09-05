@@ -8,8 +8,8 @@
 .ripple-overlay { position: fixed; inset: 0; z-index: 998; pointer-events: none; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .ripple-ring { position: absolute; border: 3px solid rgba(255,255,255,0.7); border-radius: 50%; transform: scale(0); opacity: 0; }
 .ripple-ring.ring1 { animation: rippleWave 1.4s ease-out forwards; }
-.ripple-ring.ring2 { border-color: rgba(59,130,246,0.5); animation: rippleWave 1.4s ease-out 0.15s forwards; }
-.ripple-ring.ring3 { border-color: rgba(16,185,129,0.5); animation: rippleWave 1.4s ease-out 0.3s forwards; }
+.ripple-ring.ring2 { border-color: rgba(185,28,28,0.5); animation: rippleWave 1.4s ease-out 0.15s forwards; }
+.ripple-ring.ring3 { border-color: rgba(127,29,29,0.5); animation: rippleWave 1.4s ease-out 0.3s forwards; }
 @keyframes rippleWave { 0% { transform: scale(0.15); opacity: 0.9; } 100% { transform: scale(5); opacity: 0; } }
 
 .fx-bg { position: fixed; inset: 0; z-index: 995; pointer-events: none; background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 60%); }
